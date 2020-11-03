@@ -14,6 +14,10 @@ spec:
       labels:
         {{- include "kube-resource-report.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
       serviceAccountName: {{ include "kube-resource-report.serviceAccountName" . }}
       containers:
       - name: {{ .Chart.Name }}
@@ -56,7 +60,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
       - name: nginx
-        image: nginx:alpine
+        image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
         volumeMounts:
         - mountPath: /etc/nginx/nginx.conf
           name: nginx-config

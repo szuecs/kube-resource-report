@@ -9,6 +9,14 @@ image:
   tag: "20.7.3"
   pullPolicy: IfNotPresent
 
+# Image pull secrets for Docker images
+imagePullSecrets: []
+
+nginx:
+  image:
+    repository: nginx
+    tag: alpine
+
 rbac:
   create: true
 
