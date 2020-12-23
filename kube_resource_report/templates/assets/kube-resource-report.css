@@ -90,3 +90,21 @@ main div.section.is-collapsed table { display: none; }
 .container>.resource-bar progress:last-child {
     top: -1rem;
 }
+
+p.ingressroute {
+    font-variant: small-caps;
+}
+
+ul.ingressroute {
+    padding-left: 20px;
+    list-style: disc;
+}
+
+ul.ingressroute ul{
+    padding-left: 40px;
+    list-style: circle;
+}
+
+ul.ingressroute li p {
+    font-variant: small-caps;
+}

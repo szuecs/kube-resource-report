@@ -211,6 +211,10 @@ routegroups:
 - href: "https://kube-web-view.mycorp.example.org/clusters/{cluster}/namespaces/{namespace}/routegroups/{name}"
   title: "View routegroup {name} in Kubernetes Web View"
   icon: external-link-alt
+ingressroutes:
+- href: "https://kube-web-view.mycorp.example.org/clusters/{cluster}/namespaces/{namespace}/ingressroutes/{name}"
+  title: "View ingressroute {name} in Kubernetes Web View"
+  icon: external-link-alt
 node:
 - href: "https://kube-web-view.mycorp.example.org/clusters/{cluster}/nodes/{name}"
   title: "View node {name} in Kubernetes Web View"

@@ -63,6 +63,7 @@ def get_cluster_summaries(
     prev_cluster_summaries: dict,
     no_ingress_status: bool,
     enable_routegroups: bool,
+    enable_ingressroutes: bool,
     node_labels: list,
     node_exclude_labels: list,
     data_path: Path,
@@ -105,6 +106,7 @@ def get_cluster_summaries(
                         prev_cluster_summaries.get(cluster.id, {}),
                         no_ingress_status,
                         enable_routegroups,
+                        enable_ingressroutes,
                         node_labels,
                         node_exclude_labels,
                         cluster_data_path,
@@ -233,6 +235,7 @@ def generate_report(
     use_cache,
     no_ingress_status,
     enable_routegroups,
+    enable_ingressroutes,
     output_dir,
     data_path,
     system_namespaces,
@@ -293,6 +296,7 @@ def generate_report(
             cluster_summaries,
             no_ingress_status,
             enable_routegroups,
+            enable_ingressroutes,
             node_labels,
             node_exclude_labels,
             data_path,
@@ -448,6 +452,7 @@ def generate_report(
         links,
         alpha_ema,
         enable_routegroups,
+        enable_ingressroutes,
     )
 
     return cluster_summaries
@@ -763,6 +768,7 @@ def write_json_files(
     teams,
     ingresses_by_application,
     routegroups_by_application,
+    ingressroutes_by_application,
     pods_by_application,
 ):
     with out.open("metrics.json") as fd:
@@ -846,6 +852,43 @@ def write_json_files(
                     fd,
                     default=json_default,
                 )
+            elif ingressroutes_by_application:
+                json.dump(
+                    {
+                        **application,
+                        "ingresses": [
+                            {
+                                "cluster": row["cluster_id"],
+                                "namespace": row["namespace"],
+                                "name": row["name"],
+                                "host": row["host"],
+                                "status": row["status"],
+                            }
+                            for row in ingresses_by_application[app_id]
+                        ],
+                        "ingressroutes": [
+                            {
+                                "cluster": row["cluster_id"],
+                                "namespace": row["namespace"],
+                                "name": row["name"],
+                                "host": row["host"],
+                                "tls": row["tls"],
+                            }
+                            for row in ingressroutes_by_application[app_id]
+                        ],
+                        "pods": [
+                            {
+                                **row["pod"],
+                                "cluster": row["cluster_id"],
+                                "namespace": row["namespace"],
+                                "name": row["name"],
+                            }
+                            for row in pods_by_application[app_id]
+                        ],
+                    },
+                    fd,
+                    default=json_default,
+                )
             else:
                 json.dump(
                     {
@@ -886,11 +929,16 @@ def write_html_files(
     applications,
     ingresses_by_application,
     routegroups_by_application,
+    ingressroutes_by_application,
     pods_by_application,
 ):
     context["enable_routegroups"] = False
     if routegroups_by_application:
         context["enable_routegroups"] = True
+
+    context["enable_ingressroutes"] = False
+    if ingressroutes_by_application:
+        context["enable_ingressroutes"] = True
 
     for page in [
         "index",
@@ -898,12 +946,15 @@ def write_html_files(
         "nodes",
         "ingresses",
         "routegroups",
+        "ingressroutes",
         "teams",
         "applications",
         "namespaces",
         "pods",
     ]:
         if page == "routegroups" and not context["enable_routegroups"]:
+            continue
+        if page == "ingressroutes" and not context["enable_ingressroutes"]:
             continue
         file_name = f"{page}.html"
         context["page"] = page
@@ -943,6 +994,8 @@ def write_html_files(
         context["ingresses_by_application"] = ingresses_by_application
         if context["enable_routegroups"]:
             context["routegroups_by_application"] = routegroups_by_application
+        if context["enable_ingressroutes"]:
+            context["ingressroutes_by_application"] = ingressroutes_by_application
         context["pods_by_application"] = pods_by_application
         out.render_template("application.html", context, file_name)
 
@@ -960,6 +1013,7 @@ def write_report(
     links,
     alpha_ema: float,
     enable_routegroups: bool,
+    enable_ingressroutes: bool,
 ):
     write_tsv_files(
         out, cluster_summaries, nodes, namespace_usage, applications, teams, node_labels
@@ -1004,6 +1058,23 @@ def write_report(
                 )
     else:
         routegroups_by_application = collections.defaultdict(list)
+
+    ingressroutes_by_application: Dict[str, list] = collections.defaultdict(list)
+    if enable_ingressroutes:
+        for cluster_id, summary in cluster_summaries.items():
+            for ir in summary["ingressroutes"]:
+                ingressroutes_by_application[ir[2]].append(
+                    {
+                        "cluster_id": cluster_id,
+                        "cluster_summary": summary,
+                        "namespace": ir[0],
+                        "name": ir[1],
+                        "host": ir[3],
+                        "tls": ir[4],
+                    }
+                )
+    else:
+        ingressroutes_by_application = collections.defaultdict(list)
 
     pods_by_application: Dict[str, list] = collections.defaultdict(list)
     for cluster_id, summary in cluster_summaries.items():
@@ -1083,6 +1154,7 @@ def write_report(
         teams,
         ingresses_by_application,
         routegroups_by_application,
+        ingressroutes_by_application,
         pods_by_application,
     )
 
@@ -1097,6 +1169,7 @@ def write_report(
         applications,
         ingresses_by_application,
         routegroups_by_application,
+        ingressroutes_by_application,
         pods_by_application,
     )
 

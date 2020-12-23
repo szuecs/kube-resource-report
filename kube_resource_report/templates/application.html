@@ -105,7 +105,7 @@
     <p class="content"><em>No Ingresses found for application {{ application.id }}.</em></p>
     {% endif %}
 </div>
-
+{% if enable_routegroups: %}
 <div class="section collapsible" data-name="routegroups">
     <h2 class="title is-5">RouteGroups</h2>
     {% if routegroups_by_application and routegroups_by_application[application.id]: %}
@@ -148,6 +148,65 @@
     <p class="content"><em>No Routegroups found for application {{ application.id }}.</em></p>
     {% endif %}
 </div>
+{% endif %}
+{% if enable_ingressroutes: %}
+<div class="section collapsible" data-name="ingressroutes">
+    <h2 class="title is-5">IngressRoutes</h2>
+    {% if ingressroutes_by_application and ingressroutes_by_application[application.id]: %}
+    <table class="table is-striped is-hoverable is-fullwidth" data-sortable>
+        <thead>
+            <tr>
+                <th style="min-width:100px">Cluster</th>
+                <th style="min-width:135px">Namespace</th>
+                <th>Name</th>
+                <th>Rules</th>
+                <th>Tls</th>
+                {% if links['ingressroute']: %}
+                <th></th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for ir in ingressroutes_by_application[application.id]: %}
+            <tr>
+                <td><a href="./cluster-{{ ir.cluster_id }}.html">{{ ir.cluster_summary.cluster.name }}</a></td>
+                <td>{{ ir.namespace }}</td>
+                <td>{{ ir.name }}</td>
+                <td>
+                    <ul class="ingressroute">
+                    {% for rule in ir.host: %}
+                    <li>{{rule["match"]}}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                {% if ir.tls: %}
+                {{ ir.tls['certResolver'] }}
+                {% endif %}
+                </td>
+                {% if links['ingressroute']: %}
+                <td class="links">
+                    <div class="buttons has-addons">
+                        {% for link in links['ingressroute']: %}
+                        <a href="{{ link.href.format(cluster=ir.cluster_summary.cluster.name, namespace=ir.namespace, name=ir.name, application=application.id) }}"
+                            title="{{ link.title.format(cluster=ir.cluster_summary.cluster.name, namespace=ir.namespace, name=ir.name, application=application.id ) }}"
+                            class="button is-small">
+                            <span class="icon"><i class="fas fa-{{ link.icon }}"></i></span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else: %}
+    <p class="content"><em>No IngressRoutes found for application {{ application.id }}.</em></p>
+    {% endif %}
+</div>
+{% endif %}
 
 <div class="section collapsible" data-name="components">
     <h2 class="title is-5">Components</h2>
