@@ -52,7 +52,7 @@ def test_map_gke_preemptible_node():
 
 def test_map_empty_pod():
     pod = Pod(None, {"metadata": {}, "spec": {"containers": []}, "status": {}})
-    assert map_pod(pod, 0, 0) == {
+    assert map_pod(pod, {"labels": {}}, 0, 0) == {
         "application": "",
         "component": "",
         "container_names": [],
@@ -83,13 +83,49 @@ def test_map_pod_with_resources():
             "status": {},
         },
     )
-    assert map_pod(pod, 0, 0) == {
+    assert map_pod(pod, {}, 0, 0) == {
         "application": "myapp",
         "component": "mycomp",
         "team": "myteam",
         "container_names": ["main"],
         "container_images": ["hjacobs/kube-downscaler:latest"],
         "requests": {"cpu": 0.005, "memory": 200 * 1024 * 1024},
+        "usage": {"cpu": 0, "memory": 0},
+        "cost": 0,
+    }
+
+
+def test_map_namespace_with_team():
+    pod = Pod(None, {"metadata": {}, "spec": {"containers": []}, "status": {}})
+    assert map_pod(pod, {"labels": {"team": "myteam"}}, 0, 0) == {
+        "application": "",
+        "component": "",
+        "container_names": [],
+        "container_images": [],
+        "team": "myteam",
+        "requests": {"cpu": 0, "memory": 0},
+        "usage": {"cpu": 0, "memory": 0},
+        "cost": 0,
+    }
+
+
+def test_map_pod_and_namespace_with_team():
+    pod = Pod(
+        None,
+        {
+            "metadata": {
+                "labels": {"team": "podteam"}
+            },
+            "spec": {"containers": []}, "status": {}
+        }
+    )
+    assert map_pod(pod, {"labels": {"team": "namespaceteam"}}, 0, 0) == {
+        "application": "",
+        "component": "",
+        "container_names": [],
+        "container_images": [],
+        "team": "podteam",
+        "requests": {"cpu": 0, "memory": 0},
         "usage": {"cpu": 0, "memory": 0},
         "cost": 0,
     }
