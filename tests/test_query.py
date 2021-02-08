@@ -113,11 +113,10 @@ def test_map_pod_and_namespace_with_team():
     pod = Pod(
         None,
         {
-            "metadata": {
-                "labels": {"team": "podteam"}
-            },
-            "spec": {"containers": []}, "status": {}
-        }
+            "metadata": {"labels": {"team": "podteam"}},
+            "spec": {"containers": []},
+            "status": {},
+        },
     )
     assert map_pod(pod, {"labels": {"team": "namespaceteam"}}, 0, 0) == {
         "application": "",
