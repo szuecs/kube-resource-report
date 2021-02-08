@@ -3,6 +3,11 @@ name = "kube_resource_report"
 version = "20.7.3"
 description = "Report Kubernetes cluster and pod resource requests vs usage and generate static HTML"
 authors = ["Henning Jacobs <henning@jacobs1.de>"]
+license = "GPL-3.0+"
+repository = "https://codeberg.org/hjacobs/kube-resource-report"
+
+[tool.poetry.scripts]
+kube-resource-report = 'kube_resource_report:main.main'
 
 [tool.poetry.dependencies]
 python = "^3.7"

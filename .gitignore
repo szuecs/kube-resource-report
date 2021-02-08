@@ -8,3 +8,4 @@ output/
 venv/
 .vscode/
 .mypy_cache
+dist/
