@@ -249,12 +249,14 @@ def map_node(_node: Node):
     return node
 
 
-def map_pod(pod: Pod, cost_per_cpu: float, cost_per_memory: float):
+def map_pod(pod: Pod, namespace: dict, cost_per_cpu: float, cost_per_memory: float):
     """Map a Kubernetes Pod object to our internal structure."""
 
     application = get_application_from_labels(pod.labels)
     component = get_component_from_labels(pod.labels)
     team = get_team_from_labels(pod.labels)
+    if not team:
+        team = get_team_from_labels(namespace["labels"])
     requests: Dict[str, float] = collections.defaultdict(float)
     container_images = []
     container_names = []
@@ -305,6 +307,7 @@ def query_cluster(
         namespaces[namespace.name] = {
             "status": namespace.obj["status"]["phase"],
             "email": email,
+            "labels": namespace.labels,
         }
 
     cluster_capacity: Dict[str, float] = collections.defaultdict(float)
@@ -350,7 +353,7 @@ def query_cluster(
         # ignore unschedulable/completed pods
         if not pod_active(pod):
             continue
-        pod_ = map_pod(pod, cost_per_cpu, cost_per_memory)
+        pod_ = map_pod(pod, namespaces[pod.namespace], cost_per_cpu, cost_per_memory)
         if map_pod_hook:
             map_pod_hook(pod, pod_)
         for k, v in pod_["requests"].items():
