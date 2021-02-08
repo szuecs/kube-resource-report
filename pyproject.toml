@@ -13,12 +13,9 @@ requests-futures = "*"
 stups-tokens = "*"
 
 [tool.poetry.dev-dependencies]
-black = {version = "^19.10b0", allow-prereleases = true}
 boto3 = "*"
 coverage = "*"
 coveralls = "*"
-flake8 = "*"
-mypy = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-watch = "*"
