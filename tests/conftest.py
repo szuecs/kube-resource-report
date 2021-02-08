@@ -133,6 +133,23 @@ def fake_responses():
                 }
             ]
         },
+        ("traefik.containo.us/v1alpha1", "ingressroutes"): {
+            "items": [
+                {
+                    "metadata": {"name": "myapp", "namespace": "default"},
+                    "spec": {
+                        "routes": [
+                            {
+                                "kind": "Rule",
+                                "match": "Host(`myapp.example.com`)",
+                                "services": [{"name": "myapp", "port": 8080}],
+                            }
+                        ],
+                        "tls": {"certResolver": "le-dns"},
+                    },
+                },
+            ]
+        },
         ("v1", "namespaces"): {"items": []},
     }
 

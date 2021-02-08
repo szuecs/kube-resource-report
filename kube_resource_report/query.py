@@ -20,6 +20,7 @@ from pykube import Pod
 from pykube import Service
 from requests_futures.sessions import FuturesSession
 
+from .ingressroute import IngressRoute
 from .recommender import Recommender
 from .routegroup import RouteGroup
 from .utils import HOURS_PER_MONTH
@@ -133,6 +134,31 @@ def find_routegroup_backend_application(
 
     # we still haven't found the application, let's look up pods by label selectors
     return find_application_by_selector(client, rg.namespace, selectors)
+
+
+def find_ingressroute_service_application(
+    client: pykube.HTTPClient, ir: IngressRoute, service
+):
+    """
+    Find the application ID for a given IngressRoute object.
+
+    The IngressRoute object might not have a "application" label, so let's try to find the application by looking at the service service and its pods
+    """
+    # if service["type"] != "service":
+    #     return ""
+
+    selectors = []
+    service_name = service["name"]
+    if service_name:
+        application, selector = get_application_label_from_service(
+            client, ir.namespace, service_name
+        )
+        if application:
+            return application
+        selectors.append(selector)
+
+    # we still haven't found the application, let's look up pods by label selectors
+    return find_application_by_selector(client, ir.namespace, selectors)
 
 
 def find_application_by_selector(client: pykube.HTTPClient, namespace, selectors):
@@ -291,6 +317,7 @@ def query_cluster(
     prev_cluster_summaries,
     no_ingress_status,
     enable_routegroups,
+    enable_ingressroutes,
     node_labels,
     node_exclude_labels,
     data_path: Path,
@@ -421,6 +448,7 @@ def query_cluster(
         },
         "ingresses": [],
         "routegroups": [],
+        "ingressroutes": [],
     }
 
     metrics.get_pod_usage(
@@ -518,5 +546,43 @@ def query_cluster(
                     hosts,
                 ]
                 cluster_summary["routegroups"].append(routegroup)
+
+    if enable_ingressroutes:
+        for _ir in IngressRoute.objects(cluster.client, namespace=pykube.all):
+            application = get_application_from_labels(_ir.labels)
+            rules = []
+            for route in _ir.obj["spec"]["routes"]:
+                rule = {"match": route["match"]}
+
+                if "middlewares" in route:
+                    rule["middlewares"] = route["middlewares"]
+
+                if "services" in route:
+                    rule["services"] = route["services"]
+
+                rules.append(rule)
+
+            tls = None
+            if "tls" in _ir.obj["spec"]:
+                tls = _ir.obj["spec"]["tls"]
+
+            for service in _ir.obj["spec"]["routes"][0]["services"]:
+                # for service in route["services"]:
+                if not application:
+                    # find the application by getting labels from pods
+                    service_application = find_ingressroute_service_application(
+                        cluster.client, _ir, service
+                    )
+                else:
+                    service_application = None
+
+                ingressroute = [
+                    _ir.namespace,
+                    _ir.name,
+                    application or service_application,
+                    rules,
+                    tls,
+                ]
+                cluster_summary["ingressroutes"].append(ingressroute)
 
     return cluster_summary
