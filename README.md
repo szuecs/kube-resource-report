@@ -150,7 +150,7 @@ Running as Docker container
 ``` {.sourceCode .}
 $ kubectl proxy & # start proxy to your cluster (e.g. Minikube)
 $ # run kube-resource-report and generate static HTML to ./output
-$ docker run --rm -it --user=$(id -u) --net=host -v $(pwd)/output:/output hjacobs/kube-resource-report:20.10.0 /output
+$ docker run --rm -it --user=$(id -u) --net=host -v $(pwd)/output:/output hjacobs/kube-resource-report:21.2.1 /output
 ```
 
 **For macOS**:
@@ -158,7 +158,7 @@ $ docker run --rm -it --user=$(id -u) --net=host -v $(pwd)/output:/output hjacob
 ``` {.sourceCode .}
 $ kubectl proxy --accept-hosts '.*' & # start proxy to your cluster (e.g. Minikube)
 $ # run kube-resource-report and generate static HTML to ./output
-$ docker run --rm -it -e CLUSTERS=http://docker.for.mac.localhost:8001 --user=$(id -u) -v $(pwd)/output:/output hjacobs/kube-resource-report:20.10.0 /output
+$ docker run --rm -it -e CLUSTERS=http://docker.for.mac.localhost:8001 --user=$(id -u) -v $(pwd)/output:/output hjacobs/kube-resource-report:21.2.1 /output
 ```
 
 Application Registry
@@ -272,7 +272,7 @@ Settings
 --------
 
 You can run
-`docker run --rm hjacobs/kube-resource-report:20.10.0 --help` to find
+`docker run --rm hjacobs/kube-resource-report:21.2.1 --help` to find
 out information.
 
 Besides this, you can also pass environment variables:

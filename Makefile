@@ -31,7 +31,7 @@ push: docker
 .PHONY: version
 version:
 	poetry version $(VERSION)
-	sed -i 's,$(IMAGE):[0-9.]*,$(IMAGE):$(TAG),g' README.rst deploy/*.yaml
+	sed -i 's,$(IMAGE):[0-9.]*,$(IMAGE):$(TAG),g' README.md deploy/*.yaml
 	sed -i 's,version: v[0-9.]*,version: v$(VERSION),g' deploy/*.yaml
 
 .PHONY: release
