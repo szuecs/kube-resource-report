@@ -52,6 +52,7 @@ def fake_generate_report(output_dir, monkeypatch, helpers):
             {},
             None,
             None,
+            None,
             ["worker", "node"],
             None,
         )

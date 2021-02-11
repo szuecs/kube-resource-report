@@ -232,6 +232,19 @@ pod:
 For available icon names, see the [Font Awesome gallery with free
 icons](https://fontawesome.com/icons?d=gallery&m=free).
 
+Custom Prices
+-------------
+
+Custom instance prices can be provided as CSV files in the following format:
+
+```
+region,instance-type,price
+```
+
+The `--pricing-file` and `--spot-pricing-file` can be used to specify the
+file path to these custom prices. If `--update-interval-minutes` is provided
+the prices will be reloaded from the files each time the report is generated.
+
 Customization Hooks
 -------------------
 

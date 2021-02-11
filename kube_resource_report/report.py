@@ -245,6 +245,7 @@ def generate_report(
     alpha_ema,
     cluster_summaries,
     pricing_file,
+    spot_pricing_file,
     links_file,
     node_labels,
     node_exclude_labels,
@@ -257,6 +258,9 @@ def generate_report(
 
     if pricing_file:
         pricing.regenerate_cost_dict(pricing_file)
+
+    if spot_pricing_file:
+        pricing.regenerate_spot_cost_dict(spot_pricing_file)
 
     if links_file:
         with open(links_file, "rb") as fd:
