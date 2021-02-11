@@ -81,6 +81,7 @@ def regenerate_cost_dict(pricing_file):
             region, instance_type, monthly_cost = row
             NODE_COSTS_MONTHLY[(region, instance_type)] = float(monthly_cost)
 
+
 def regenerate_spot_cost_dict(spot_pricing_file):
     # Reset the spot costs dict and fill it with data from the external pricing file
     NODE_SPOT_COSTS_MONTHLY.clear()

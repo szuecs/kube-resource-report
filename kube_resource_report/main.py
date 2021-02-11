@@ -134,7 +134,9 @@ def get_parser():
         "--pricing-file", type=existing_path, help="Path to alternate pricing file"
     )
     parser.add_argument(
-        "--spot-pricing-file", type=existing_path, help="Path to alternate pricing file for spot instances"
+        "--spot-pricing-file",
+        type=existing_path,
+        help="Path to alternate pricing file for spot instances",
     )
     parser.add_argument(
         "--links-file",
