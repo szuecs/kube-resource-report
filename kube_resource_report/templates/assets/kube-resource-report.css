@@ -108,3 +108,7 @@ ul.ingressroute ul{
 ul.ingressroute li p {
     font-variant: small-caps;
 }
+
+.table thead th {
+    vertical-align: top !important; /* Ensure headings align when `abbr` tags are used */
+}
