@@ -134,6 +134,9 @@ def get_parser():
         "--pricing-file", type=existing_path, help="Path to alternate pricing file"
     )
     parser.add_argument(
+        "--spot-pricing-file", type=existing_path, help="Path to alternate pricing file for spot instances"
+    )
+    parser.add_argument(
         "--links-file",
         type=existing_path,
         help="Path to YAML file defining custom links for resources",
@@ -219,6 +222,7 @@ def main():
             args.alpha_ema,
             cluster_summaries,
             args.pricing_file,
+            args.spot_pricing_file,
             args.links_file,
             args.node_labels,
             args.node_exclude_labels,
