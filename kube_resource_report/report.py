@@ -921,6 +921,15 @@ def write_json_files(
                     default=json_default,
                 )
 
+def write_prom_files(
+    out,
+    context,
+    alpha_ema,
+):
+
+    context["page"] = "metrics"
+    context["alpha_ema"] = alpha_ema
+    out.render_template("metrics", context, "metrics")
 
 def write_html_files(
     out,
@@ -1160,6 +1169,12 @@ def write_report(
         routegroups_by_application,
         ingressroutes_by_application,
         pods_by_application,
+    )
+
+    write_prom_files(
+        out,
+        context,
+        alpha_ema,
     )
 
     write_html_files(
