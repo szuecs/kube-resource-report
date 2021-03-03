@@ -40,6 +40,7 @@ class OutputManager:
         env.filters["money"] = filters.money
         env.filters["cpu"] = filters.cpu
         env.filters["memory"] = filters.memory
+        env.filters["unix_timestamp"] = filters.unix_timestamp
         self.env = env
 
     def open(self, file_name, mode="w"):
