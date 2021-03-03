@@ -921,6 +921,7 @@ def write_json_files(
                     default=json_default,
                 )
 
+
 def write_prom_files(
     out,
     context,
@@ -930,6 +931,7 @@ def write_prom_files(
     context["page"] = "metrics"
     context["alpha_ema"] = alpha_ema
     out.render_template("metrics", context, "metrics")
+
 
 def write_html_files(
     out,
