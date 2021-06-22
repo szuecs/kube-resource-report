@@ -578,6 +578,24 @@ def write_tsv_files(
                     [cluster_id, summary["cluster"].api_server_url] + ingress
                 )
 
+    with out.open("routegroups.tsv") as csvfile:
+        writer = csv.writer(csvfile, delimiter="\t")
+        writer.writerow(
+            [
+                "Cluster ID",
+                "API Server URL",
+                "Namespace",
+                "Name",
+                "Application",
+                "Host",
+            ]
+        )
+        for cluster_id, summary in sorted(cluster_summaries.items()):
+            for rg in summary["routegroups"]:
+                writer.writerow(
+                    [cluster_id, summary["cluster"].api_server_url] + rg
+                )
+
     with out.open("teams.tsv") as csvfile:
         writer = csv.writer(csvfile, delimiter="\t")
         writer.writerow(
